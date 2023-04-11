@@ -4,6 +4,33 @@
 	License: pixelarity.com/license
 */
 
+/*
+    Add some code to make sure that the website elements are always loaded correctly following the solution at
+    https://stackoverflow.com/questions/38585373/why-is-my-load-event-function-not-beeing-executed-after-switching-to-jquery-3
+*/
+
+var windowLoaded = false;
+$(window).on("load", function() {
+   windowLoaded = true;
+});
+
+function afterLoad() {
+
+    var	$window = $(window),
+    $document = $(document),
+    $body = $('body'),
+    $wrapper = $('#wrapper'),
+    $footer = $('#footer');
+
+    window.setTimeout(function() {
+        $body.removeClass('is-loading-0');
+
+        window.setTimeout(function() {
+            $body.removeClass('is-loading-1');
+        }, 1500);
+    }, 100);
+}
+
 (function($) {
 
 	skel.breakpoints({
@@ -24,15 +51,12 @@
 			$footer = $('#footer');
 
 		// Disable animations/transitions until the page has loaded.
-			$window.on('load', function() {
-				window.setTimeout(function() {
-					$body.removeClass('is-loading-0');
-
-					window.setTimeout(function() {
-						$body.removeClass('is-loading-1');
-					}, 1500);
-				}, 100);
-			});
+        if( !windowLoaded ) {
+            $(window).on("load", afterLoad);
+        }
+        else {
+            afterLoad();
+        }
 
 		// Fix: Placeholder polyfill.
 			$('form').placeholder();
